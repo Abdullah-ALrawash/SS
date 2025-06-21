@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>محاكي الجنس</title>
+  <link id="live-css" rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    @font-face {
+    font-family: LenosBlack;
+    src: url('assets/fonts/Lenos-Black.woff2') format('woff2'),
+      url('assets/fonts/Lenos-Black.woff') format('woff'),
+      url('assets/fonts/Lenos-Black.otf') format('opentype');
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100%;
+  }
+
+  body {
+    font-family: 'Arial', sans-serif;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: background-image 0.8s ease-in-out, background-color 0.8s ease-in-out;
+  }
+
+  .game-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .top-ui {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    position: absolute;
+    top: 20px;
+    padding: 0 20px;
+    z-index: 10;
+  }
+
+  .left-top-icons {
+    display: flex;
+  }
+
+  .left-top-icons img {
+    cursor: pointer;
+  }
+
+  #home-button {
+    margin-top: 15px;
+    width: 60px;
+    height: 60px;
+    margin-left: 22px;
+  }
+
+  #music-toggle[src*="music-off"],
+  #sfx-toggle[src*="sfx-off"] {
+    margin-left: 12px;
+    margin-top: 11px;
+    width: 76px;
+    height: 76px;
+  }
+
+  #music-toggle[src*="music-on"],
+  #sfx-toggle[src*="sfx-on"] {
+    margin-left: 20px;
+    margin-top: 18px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .section-title {
+    margin-top: 25px;
+    font-size: 6.5rem;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    animation: fadeInDown 0.6s ease-out;
+    font-family: LenosBlack;
+    text-shadow:
+      -3px -3px 0 #ffffff,
+      3px -3px 0 #ffffff,
+      -3px 3px 0 #ffffff,
+      3px 3px 0 #ffffff,
+      5px 5px 0 #ff00c3;
+  }
+
+  .options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: -50px;
+  }
+
+  .option {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    cursor: pointer;
+    margin-left: -4px;
+    opacity: 0;
+    transform: translateY(20px) scale(1);
+    will-change: transform;
+  }
+
+  .option.show {
+    animation: fadeSlideUpOptions 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(30px) scale(1);
+  }
+
+  @keyframes fadeSlideUpOptions {
+    0% {
+      opacity: 0;
+      transform: translateY(30px) scale(1);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .option:hover {
+    transform: translateY(0) scale(1.1);
+    z-index: 2;
+  }
+
+  .option img {
+    width: 500px;
+    height: auto;
+    display: block;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 1rem;
+    color: #000000;
+    margin-top: auto;
+    padding: 20px;
+  }
+
+  footer a {
+    color: #000000;
+    text-decoration: none;
+    margin: 0 5px;
+  }
+
+  @media (max-width: 768px) {
+    .option img {
+      width: 200px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .option img {
+      width: 160px;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      margin-top: 60px;
+      text-shadow:
+        -2px -2px 0 #000,
+        2px -2px 0 #000,
+        -2px 2px 0 #000,
+        2px 2px 0 #000;
+    }
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .coin-ui {
+    display: flex;
+    align-items: center;
+    background-color: #ffbdf1;
+    padding: 6px 12px;
+    border-radius: 50px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    gap: 10px;
+    margin-top: 27px;
+    margin-right: 30px;
+    border: 4px solid #000000;
+  }
+
+  .coin-icon {
+    width: 60px;
+  }
+
+  #coin-count {
+    font-size: 2.5rem;
+    font-family: 'LenosBlack', sans-serif;
+    color: #000;
+  }
+
+  .coin-plus {
+    background: #00000033;
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  .loading-in-options {
+    width: 100%;
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .loading-in-options img {
+    width: 600px;
+    height: 600px;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .video-scene video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .scene-buttons {
+position: absolute;
+width: 96%;
+left: 0;
+bottom: 20px;
+display: flex;
+justify-content: space-between;
+align-items: flex-end;
+padding: 0 30px;
+z-index: 3;
+}
+
+.scene-place {
+background-color: #9e4d8a;
+color: white;
+font-family: LenosBlack;
+padding: 10px 18px;
+border-radius: 25px;
+border: none;
+cursor: pointer;
+}
+
+.scene-btns-right {
+  right:0px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+align-items: flex-end;
+}
+
+
+
+
+.scene-btn {
+    
+    width: 90px;
+    border: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
+
+#pos1{
+  position: absolute;
+  bottom :0px;
+  right :180px;
+}
+#pos2{
+  position: absolute;
+  bottom :100px;
+  right :140px;
+
+}
+#pos3{
+  position: absolute;
+  bottom :190px;
+  right :70px;
+
+}
+#pos4{
+  position: absolute;
+  bottom :0px;
+  right :65px;
+
+}
+#pos5{
+  position: absolute;
+  bottom :95px;
+  right :25px;
+
+}
+.orgasm-bar {
+      position: fixed;
+      top: 55px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 530px; /* Use viewport width for consistent sizing */
+      height: 57px;
+      background: url('assets/images/icons/bar.svg') center center / cover no-repeat; 
+      overflow: visible;
+      z-index: 5;
+    }
+
+    .orgasm-face {
+      position: absolute;
+      top: -7px;
+      left: 0;
+      width: 60px;
+      height: 60px;
+      transition: transform 0.05s linear;
+      transform: translateX(0); /* initial position reset */
+    }
+
+    .orgasm-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 99;
+      flex-direction: column;
+      color: white;
+      font-family: LenosBlack;
+      text-align: center;
+    }
+
+    .orgasm-popup button {
+      padding: 12px 24px;
+      margin: 15px;
+      font-size: 1.4rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .orgasm-popup .yes {
+      background-color: #ff66c4;
+      color: white;
+    }
+
+    .orgasm-popup .home {
+      background-color: #999;
+      color: white;
+    }
+  </style>
+  <script>
+    const basePath = 'assets/images/';
+    const sfxPath = 'assets/sfx/';
+    const iconPath = 'assets/images/icons/';
+    const musicPath = 'assets/music/';
+
+    const steps = [{
+        key: 'breastSize',
+        title: "اختَر حجم الصدر المفضل",
+        bg: `${basePath}bg/bg1.png`,
+        options: [{
+            label: 'small',
+            image: `${basePath}breast/small.png`
+          },
+          {
+            label: 'medium',
+            image: `${basePath}breast/medium.png`
+          },
+          {
+            label: 'large',
+            image: `${basePath}breast/large.png`
+          }
+        ]
+      },
+      {
+        key: 'age',
+        title: "ما العمر الذي تفضله؟",
+        bg: `${basePath}bg/bg1.png`,
+        options: [{
+            label: 'teen',
+            image: `${basePath}age/teen.png`
+          },
+          {
+            label: 'adult',
+            image: `${basePath}age/adult.png`
+          },
+          {
+            label: 'milf',
+            image: `${basePath}age/milf.png`
+          }
+        ]
+      },
+      {
+        key: 'skinTone',
+        title: "أيّ لون بشرة يثيرك أكثر؟",
+        bg: `${basePath}bg/bg1.png`,
+        options: [{
+            label: 'light',
+            image: `${basePath}tone/light.png`
+          },
+          {
+            label: 'tan',
+            image: `${basePath}tone/tan.png`
+          },
+          {
+            label: 'dark',
+            image: `${basePath}tone/dark.png`
+          }
+        ]
+      },
+      {
+        key: 'bodyType',
+        title: "أيّ نوع جسم يجذبك أكثر؟",
+        bg: `${basePath}bg/bg1.png`,
+        options: [{
+            label: 'slim',
+            image: `${basePath}mass/slim.png`
+          },
+          {
+            label: 'curvy',
+            image: `${basePath}mass/curvy.png`
+          },
+          {
+            label: 'thick',
+            image: `${basePath}mass/thick.png`
+          }
+        ]
+      },
+      {
+        key: 'location',
+        title: "أيّ موقع يثيرك أكثر؟",
+        bg: `${basePath}bg/bg1.png`,
+        options: [{
+            label: 'bedroom',
+            image: `${basePath}places/bedroom.png`
+          },
+          {
+            label: 'beach',
+            image: `${basePath}places/livingroom.png`
+          },
+          {
+            label: 'bathroom',
+            image: `${basePath}places/bathroom.png`
+          }
+        ]
+      }
+
+    ];
+
+    const females = [{
+        name: 'ليلى',
+        breastSize: 'medium',
+        age: 'adult',
+        skinTone: 'tan',
+        bodyType: 'curvy',
+        image: `${basePath}females/layla.png`
+      },
+      {
+        name: 'سارة',
+        breastSize: 'small',
+        age: 'teen',
+        skinTone: 'light',
+        bodyType: 'slim',
+        image: `${basePath}females/sarah.png`
+      },
+      {
+        name: 'نجلاء',
+        breastSize: 'large',
+        age: 'milf',
+        skinTone: 'dark',
+        bodyType: 'thick',
+        image: `${basePath}females/najla.png`
+      },
+      {
+        name: 'ريم',
+        breastSize: 'small',
+        age: 'milf',
+        skinTone: 'light',
+        bodyType: 'curvy',
+        image: `${basePath}females/reem.png`
+      },
+      {
+        name: 'هند',
+        breastSize: 'medium',
+        age: 'teen',
+        skinTone: 'tan',
+        bodyType: 'thick',
+        image: `${basePath}females/hind.png`
+      },
+      {
+        name: 'شهد',
+        breastSize: 'large',
+        age: 'adult',
+        skinTone: 'dark',
+        bodyType: 'curvy',
+        image: `${basePath}females/shahd.png`
+      }
+    ];
+
+    let currentStep = 0;
+let userChoices = {};
+
+const stats = {
+  females: {},
+  choices: {
+    age: {},
+    breastSize: {},
+    skinTone: {},
+    bodyType: {},
+    location: {}
+  }
+};
+    let isMusicOn = false;
+    let isSfxOn = true;
+    let currentMusic = null;
+
+    function playSound(sound) {
+      if (!isSfxOn) return;
+      const audio = new Audio(`${sfxPath}${sound}.mp3`);
+      audio.play();
+    }
+
+    function playMusic(src) {
+      if (currentMusic) {
+        currentMusic.pause();
+        currentMusic.currentTime = 0;
+      }
+      currentMusic = new Audio(src);
+      currentMusic.loop = true;
+      currentMusic.volume = 0.6;
+      if (isMusicOn) {
+        currentMusic.play();
+      }
+    }
+
+    function renderStep(index) {
+  const step = steps[index];
+  $('.section-title').text(step.title);
+  $('body').css('background-image', `url(${step.bg})`);
+  const $optionsContainer = $('.options');
+  $optionsContainer.empty();
+
+  step.options.forEach(option => {
+    const $opt = $(`<div class="option show"><img src="${option.image}" /></div>`);
+    $opt.css('--delay', `${Math.random() * 0.3}s`);
+    $opt.click(() => {
+      playSound("select");
+      userChoices[step.key] = option.label;
+
+      // Track choices
+      if (!stats.choices[step.key][option.label]) {
+        stats.choices[step.key][option.label] = 1;
+      } else {
+        stats.choices[step.key][option.label]++;
+      }
+      currentStep++;
+      if (currentStep < steps.length) {
+            renderStep(currentStep);
+          } else {
+        $('.section-title').text('جاري البحث عن تطابق...');
+        const $optionsContainer = $('.options');
+        $optionsContainer.empty();
+        const $loading = $(`<div class="loading-in-options"><img src="assets/images/loading.gif" alt="جارٍ البحث"></div>`);
+        $optionsContainer.append($loading);
+        setTimeout(() => {
+          showTopMatches();
+        }, 2000);
+      
+      }
+        });
+        $optionsContainer.append($opt);
+      });
+    }
+
+    function showTopMatches() {
+  const scored = females.map(female => {
+    let score = 0;
+    for (const key in userChoices) {
+      if (female[key] === userChoices[key]) score++;
+    }
+    return {
+      ...female,
+      score
+    };
+  });
+  const topMatches = scored.sort((a, b) => b.score - a.score).slice(0, 3);
+  $('.section-title').text('أفضل 3 مطابقات لذوقك');
+  $('body').css('background-image', `url("${basePath}bg/bg2.png")`);
+  const $optionsContainer = $('.options');
+  $optionsContainer.empty();
+  topMatches.forEach(f => {
+    if (!stats.females[f.name]) {
+      stats.females[f.name] = 1;
+    } else {
+      stats.females[f.name]++;
+    }
+    const $card = $(`
+      <div class="option show">
+        <img src="${f.image}" alt="${f.name}" >
+      </div>`);
+    $card.click(() => {
+      startVideoPlayer(f.name, userChoices.location);
+    });
+    $optionsContainer.append($card);
+  });
+  console.log("📊 Snapshot Stats:", JSON.stringify(stats, null, 2));
+}
+
+function startVideoPlayer(femaleName, location) {
+  $('.section-title').hide(); 
+  const $optionsContainer = $('.options');
+  $optionsContainer.empty();
+//        <source src="assets/video/scenes/${femaleName}_pos1_${location}.mp4" type="video/mp4">
+
+  const $videoHTML = $(
+    `<div class="video-scene">
+      <video id="sexScene" autoplay loop muted playsinline>
+        <source src="assets/scenes/test.mp4" type="video/mp4">
+        متصفحك لا يدعم عرض الفيديو.
+      </video>
+
+      <div class="scene-buttons">
+  <div class="scene-btns-right">
+
+        <img id ="pos1" class="scene-btn" data-pos="pos1" src="assets/images/buttons/position.png">
+        <img id ="pos2" class="scene-btn" data-pos="pos2" src="assets/images/buttons/position.png">
+        <img id ="pos3" class="scene-btn" data-pos="pos3" src="assets/images/buttons/position.png">
+        <img id ="pos4" class="scene-btn" data-pos="pos4" src="assets/images/buttons/position.png">
+        <img id ="pos5" class="scene-btn" data-pos="pos5" src="assets/images/buttons/position.png">
+          </div>
+                      <button class="scene-place">تغيير المكان</button>
+
+      </div>
+    </div>`
+  );
+
+  $optionsContainer.append($videoHTML);
+
+  $('.top-ui').css('z-index', '2'); // Ensure top UI stays above the video
+
+  // start the orgasem timer 
+  startOrgasmTimer();
+
+
+  $('.scene-btn').click(function () {
+    const position = $(this).data('pos');
+    const video = $('#sexScene');
+        video.attr('src', "assets/scenes/scene.mp4");
+
+    //video.attr('src', `assets/video/scenes/${femaleName}_${position}_${location}.mp4`);
+    video[0].load();
+    video[0].play();
+  });
+}
+
+    $(document).ready(function () { 
+
+      $('#home-button').click(function () {
+  cancelAnimationFrame(orgasmFrame);
+  document.getElementById('orgasm-face').style.left = '0px';
+  document.querySelector('.orgasm-bar').style.display = 'none';
+  currentStep = 0;
+  userChoices = {};
+  $('.section-title').show();
+  renderStep(currentStep);
+});
+      // add coins 
+      let coinCount = 50;
+      $('#add-coins').click(function () {
+        coinCount += 10;
+        $('#coin-count').text(coinCount);
+      });
+
+
+      $('#music-toggle').click(function () {
+        isMusicOn = !isMusicOn;
+        const icon = isMusicOn ? `${iconPath}music-on.svg` : `${iconPath}music-off.svg`;
+        $(this).attr('src', icon);
+        if (currentMusic) {
+          isMusicOn ? currentMusic.play() : currentMusic.pause();
+        } else if (isMusicOn) {
+          playMusic(`${musicPath}Welcome to the Middle East.mp3`);
+        }
+      });
+
+      $('#sfx-toggle').click(function () {
+        isSfxOn = !isSfxOn;
+        const icon = isSfxOn ? `${iconPath}sfx-on.svg` : `${iconPath}sfx-off.svg`;
+        $(this).attr('src', icon);
+      });
+
+      renderStep(currentStep);
+    });
+
+
+
+    document.addEventListener('keydown', (e) => {
+  if (e.key === 'r') { // Press Ctrl + R to reload just the CSS
+    const css = document.getElementById('live-css');
+    const href = css.getAttribute('href').split('?')[0];
+    css.setAttribute('href', `${href}?v=${new Date().getTime()}`);
+    console.log('🔁 CSS reloaded');
+    e.preventDefault(); // prevent full-page refresh
+  }
+
+
+});
+
+
+let orgasmDuration = 30; // seconds
+    let orgasmFrame;
+
+    function startOrgasmTimer() {
+      const bar = document.querySelector('.orgasm-bar');
+      const face = document.getElementById('orgasm-face');
+      bar.style.display = 'block';
+
+      let startTime = performance.now();
+      const duration = orgasmDuration * 1000;
+      const barRect = bar.getBoundingClientRect();
+      const barWidth = barRect.width;
+      const faceWidth = face.offsetWidth;
+
+      function animate(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const facePosition = (1 - progress) * (barWidth - faceWidth);
+        face.style.left = `${facePosition}px`;
+
+        if (progress < 1) {
+          orgasmFrame = requestAnimationFrame(animate);
+        } else {
+          document.getElementById('orgasm-popup').style.display = 'flex';
+        }
+      }
+
+      orgasmFrame = requestAnimationFrame(animate);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('.orgasm-popup .yes').addEventListener('click', () => {
+        document.getElementById('orgasm-popup').style.display = 'none';
+        document.getElementById('orgasm-face').style.left = '0px';
+        cancelAnimationFrame(orgasmFrame);
+        startOrgasmTimer();
+      });
+
+      document.querySelector('.orgasm-popup .home').addEventListener('click', () => {
+          cancelAnimationFrame(orgasmFrame);
+          document.getElementById('orgasm-face').style.left = '0px';
+          document.querySelector('.orgasm-bar').style.display = 'none';
+          document.getElementById('orgasm-popup').style.display = 'none';
+         currentStep = 0;
+         userChoices = {};
+        $('.section-title').show();
+         renderStep(currentStep);
+      });
+    });
+
+  </script>
+</head>
+
+<body>
+
+  <div class="game-container">
+    <div class="top-ui">
+      <div class="coin-ui">
+        <img src="assets/images/icons/gem.png" alt="Love Coin" class="coin-icon">
+        <span id="coin-count">50</span>
+        <button id="add-coins" class="coin-plus">+</button>
+      </div>
+
+      <!--<img src="assets/images/small-logo.png" alt="Game Logo" class="game-logo">-->
+      <div class="left-top-icons">
+        <img id="music-toggle" src="assets/images/icons/music-off.svg" alt="Toggle Music">
+        <img id="sfx-toggle" src="assets/images/icons/sfx-on.svg" alt="Toggle SFX">
+        <img id="home-button" src="assets/images/icons/home.svg" alt="الصفحة الرئيسية">
+
+      </div>
+    </div>
+
+    <h1 class="section-title">اختر حجم الصدر</h1>
+    
+
+
+    <div class="options"></div>
+
+    <div class="orgasm-bar" style="display: none;">
+      <img src="assets/images/icons/head.png" alt="head" class="orgasm-face" id="orgasm-face">
+    </div>
+
+    <footer>
+      <a href="#">حقوق النشر</a>
+      <span> . </span>
+      <a href="#">المساعدة</a>
+      <span> . </span>
+      <a href="#">تواصل مع الدعم</a>
+    </footer>
+
+  </div>
+
+  <div class="orgasm-popup" id="orgasm-popup" style="display: none;">
+    <h2>هل ترغب بإعادة المشهد مقابل 50 جوهرة؟</h2>
+    <button class="yes">نعم</button>
+    <button class="home">العودة للصفحة الرئيسية</button>
+  </div>
+</body>
+
+</html>
+
